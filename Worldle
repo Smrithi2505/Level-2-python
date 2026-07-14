@@ -1,0 +1,280 @@
+import tkinter as tk
+from tkinter import messagebox
+import random
+
+
+with open("words.txt", "r") as file:
+    wordlist = [word.strip().lower() for word in file]
+
+secretWord = random.choice(wordlist)
+
+currentRow = 0
+timeLeft = 60
+
+
+
+root = tk.Tk()
+root.title("Wordle")
+root.geometry("600x650")
+
+
+timerLabel = tk.Label(root, text="Time: 60", font=("Arial", 16))
+timerLabel.grid(row=0, column=5, padx=20)
+
+
+def updateTimer():
+    global timeLeft
+
+    timerLabel.config(text="Time: " + str(timeLeft))
+
+    if timeLeft > 0:
+        timeLeft -= 1
+        root.after(1000, updateTimer)
+    else:
+        messagebox.showinfo("Time Up!", "The word was " + secretWord.upper())
+
+
+
+boxes = []
+
+for row in range(6):
+    temp = []
+
+    for col in range(5):
+
+        label = tk.Label(
+            root,
+            text="",
+            width=4,
+            height=2,
+            font=("Arial", 18),
+            relief="solid",
+            borderwidth=2
+        )
+
+        label.grid(row=row + 1, column=col, padx=3, pady=3)
+
+        temp.append(label)
+
+    boxes.append(temp)
+
+
+EntryBox = tk.Entry(root, font=("Arial", 16), width=10)
+EntryBox.grid(row=8, column=0, columnspan=2)
+
+
+
+GuessButton = tk.Button(root, text="Guess")
+GuessButton.grid(row=8, column=2)
+
+
+
+def showHelp():
+
+    messagebox.showinfo(
+        "Help",
+        "Guess the 5-letter word.\n\n"
+        "Green = Correct letter\n"
+        "Yellow = Wrong place\n"
+        "Gray = Letter not in word\n"
+        "You have 6 guesses."
+    )
+
+HelpButton = tk.Button(root, text="Help", command=showHelp)
+HelpButton.grid(row=8, column=3)
+
+
+def restartGame():
+
+    global secretWord
+    global currentRow
+    global timeLeft
+
+    secretWord = random.choice(wordlist)
+
+    currentRow = 0
+    timeLeft = 60
+
+    EntryBox.delete(0, tk.END)
+
+    for row in boxes:
+        for box in row:
+            box.config(text="", bg="SystemButtonFace")
+
+    for button in keyboardButtons.values():
+        button.config(bg="SystemButtonFace")
+
+RestartButton = tk.Button(root, text="Restart", command=restartGame)
+RestartButton.grid(row=8, column=4)
+
+
+keyboardFrame = tk.Frame(root)
+keyboardFrame.grid(row=9, column=0, columnspan=8, pady=20)
+
+keyboardButtons = {}
+
+letters = [
+    "QWERTYUIOP",
+    "ASDFGHJKL",
+    "ZXCVBNM"
+]
+
+def addLetter(letter):
+
+    if len(EntryBox.get()) < 5:
+        EntryBox.insert(tk.END, letter)
+
+for r in range(len(letters)):
+
+    line = letters[r]
+
+    for c in range(len(line)):
+
+        letter = line[c]
+
+        button = tk.Button(
+            keyboardFrame,
+            text=letter,
+            width=3,
+            command=lambda x=letter: addLetter(x)
+        )
+
+        button.grid(row=r, column=c)
+
+        keyboardButtons[letter] = button
+
+
+def backspace():
+
+    text = EntryBox.get()
+
+    EntryBox.delete(0, tk.END)
+
+    EntryBox.insert(0, text[:-1])
+
+BackButton = tk.Button(
+    keyboardFrame,
+    text="⌫",
+    command=backspace,
+    width=5
+)
+
+BackButton.grid(row=3, column=0, columnspan=2)
+
+
+def clearWord():
+
+    EntryBox.delete(0, tk.END)
+
+ClearButton = tk.Button(
+    keyboardFrame,
+    text="Clear",
+    command=clearWord,
+    width=6
+)
+
+ClearButton.grid(row=3, column=2, columnspan=2)
+
+
+updateTimer()
+
+root.mainloop()
+
+
+def checkGuess():
+
+    global currentRow
+
+    guessedWord = EntryBox.get().lower()
+
+    
+    if len(guessedWord) != 5:
+        messagebox.showinfo("Error", "Enter a 5-letter word.")
+        return
+
+    
+    if guessedWord not in wordlist:
+        messagebox.showinfo("Error", "Word not found.")
+        return
+
+    
+    colours = ["gray"] * 5
+    lettersLeft = list(secretWord)
+
+    
+    for i in range(5):
+        if guessedWord[i] == secretWord[i]:
+            colours[i] = "green"
+            lettersLeft[i] = None
+
+    
+    for i in range(5):
+        if colours[i] == "green":
+            continue
+
+        if guessedWord[i] in lettersLeft:
+            colours[i] = "gold"
+            lettersLeft[lettersLeft.index(guessedWord[i])] = None
+
+    
+    for i in range(5):
+
+        boxes[currentRow][i].config(
+            text=guessedWord[i].upper(),
+            bg=colours[i]
+        )
+
+    
+    for i in range(5):
+
+        letter = guessedWord[i].upper()
+
+        if letter in keyboardButtons:
+
+            currentColour = keyboardButtons[letter].cget("bg")
+
+            if colours[i] == "green":
+                keyboardButtons[letter].config(bg="green")
+
+            elif colours[i] == "gold":
+
+                if currentColour != "green":
+                    keyboardButtons[letter].config(bg="gold")
+
+            else:
+
+                if currentColour not in ("green", "gold"):
+                    keyboardButtons[letter].config(bg="gray")
+
+    
+    if guessedWord == secretWord:
+
+        messagebox.showinfo(
+            "Congratulations!",
+            "You guessed the word!"
+        )
+
+        return
+
+    currentRow += 1
+
+    EntryBox.delete(0, tk.END)
+
+   
+
+    if currentRow == 6:
+
+        messagebox.showinfo(
+            "Game Over",
+            "The word was " + secretWord.upper()
+        )
+
+# Connect the Guess button
+GuessButton.config(command=checkGuess)
+
+
+
+root.mainloop()
+
+timeLeft = 60
+updateTimer()

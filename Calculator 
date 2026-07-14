@@ -1,0 +1,157 @@
+import tkinter as tk
+import math
+
+window = tk.Tk()
+window.title("Improved Calculator")
+window.geometry("320x380")
+window.resizable(False, False)
+
+# ---------------- Functions ----------------
+
+def press_num(num):
+    text = entr_label.cget("text")
+
+     if text == "0":
+                entr_label.configure(text=str(num))
+                    else:
+                            entr_label.configure(text=text + str(num))
+
+
+                            def press_op(op):
+                                text = entr_label.cget("text")
+                                    expr = expr_label.cget("text")
+
+                                        expr_label.configure(text=expr + text + op)
+                                            entr_label.configure(text="0")
+
+
+                                            def press_C():
+                                                expr_label.configure(text="")
+                                                    entr_label.configure(text="0")
+
+
+                                                    def press_eq():
+                                                        text = entr_label.cget("text")
+                                                            expr = expr_label.cget("text")
+
+                                                                try:
+                                                                        result = eval(expr + text)
+                                                                                expr_label.configure(text=expr + text + " =")
+                                                                                        entr_label.configure(text=str(result))
+
+                                                                                            except ZeroDivisionError:
+                                                                                                    entr_label.configure(text="Division by Zero")
+
+                                                                                                        except SyntaxError:
+                                                                                                                entr_label.configure(text="Syntax Error")
+
+                                                                                                                    except Exception:
+                                                                                                                            entr_label.configure(text="Error")
+
+
+                                                                                                                            def negate():
+                                                                                                                                text = entr_label.cget("text")
+
+                                                                                                                                    if text.startswith("-"):
+                                                                                                                                            entr_label.configure(text=text[1:])
+                                                                                                                                                elif text != "0":
+                                                                                                                                                        entr_label.configure(text="-"+text)
+
+
+                                                                                                                                                        def square():
+                                                                                                                                                            try:
+                                                                                                                                                                    value = float(entr_label.cget("text"))
+                                                                                                                                                                            entr_label.configure(text=str(value ** 2))
+                                                                                                                                                                                except:
+                                                                                                                                                                                        entr_label.configure(text="Error")
+
+
+                                                                                                                                                                                        def square_root():
+                                                                                                                                                                                            try:
+                                                                                                                                                                                                    value = float(entr_label.cget("text"))
+
+                                                                                                                                                                                                            if value < 0:
+                                                                                                                                                                                                                        entr_label.configure(text="Invalid")
+                                                                                                                                                                                                                                else:
+                                                                                                                                                                                                                                            entr_label.configure(text=str(math.sqrt(value)))
+
+                                                                                                                                                                                                                                                except:
+                                                                                                                                                                                                                                                        entr_label.configure(text="Error")
+
+
+                                                                                                                                                                                                                                                        # ---------------- Display ----------------
+
+                                                                                                                                                                                                                                                        expr_label = tk.Label(
+                                                                                                                                                                                                                                                                window,
+                                                                                                                                                                                                                                                                    text="",
+                                                                                                                                                                                                                                                                        bg="lightgrey",
+                                                                                                                                                                                                                                                                            width=35,
+                                                                                                                                                                                                                                                                                height=2,
+                                                                                                                                                                                                                                                                                    anchor=tk.E,
+                                                                                                                                                                                                                                                                                        relief="ridge"
+                                                                                                                                                                                                                                                        )
+
+                                                                                                                                                                                                                                                        expr_label.grid(row=0, column=0, columnspan=5)
+
+                                                                                                                                                                                                                                                        entr_label = tk.Label(
+                                                                                                                                                                                                                                                                window,
+                                                                                                                                                                                                                                                                    text="0",
+                                                                                                                                                                                                                                                                        bg="white",
+                                                                                                                                                                                                                                                                            width=35,
+                                                                                                                                                                                                                                                                                height=2,
+                                                                                                                                                                                                                                                                                    anchor=tk.E,
+                                                                                                                                                                                                                                                                                        font=("Arial", 15),
+                                                                                                                                                                                                                                                                                            relief="ridge"
+                                                                                                                                                                                                                                                        )
+
+                                                                                                                                                                                                                                                        entr_label.grid(row=1, column=0, columnspan=5)
+                                                                                                                                                                                                                                                        Send "Part 2" and I'll provide the button layout and mainloop().
+
+
+                                                                                                                                                                                                                                                        Part 2
+
+                                                                                                                                                                                                                                                        Part 2 – Buttons and mainloop()
+                                                                                                                                                                                                                                                        Add this below Part 1.
+
+                                                                                                                                                                                                                                                        # ---------------- Buttons ----------------
+
+                                                                                                                                                                                                                                                        # Row 2
+                                                                                                                                                                                                                                                        tk.Button(window, text="√", command=square_root).grid(row=2, column=0, sticky=tk.NSEW)
+                                                                                                                                                                                                                                                        tk.Button(window, text="x²", command=square).grid(row=2, column=1, sticky=tk.NSEW)
+                                                                                                                                                                                                                                                        tk.Button(window, text="+/-", command=negate).grid(row=2, column=2, sticky=tk.NSEW)
+                                                                                                                                                                                                                                                        tk.Button(window, text="C", command=press_C).grid(row=2, column=3, sticky=tk.NSEW)
+                                                                                                                                                                                                                                                        tk.Button(window, text="/", command=lambda: press_op("/")).grid(row=2, column=4, sticky=tk.NSEW)
+
+                                                                                                                                                                                                                                                        # Row 3
+                                                                                                                                                                                                                                                        tk.Button(window, text="7", command=lambda: press_num(7)).grid(row=3, column=0, sticky=tk.NSEW)
+                                                                                                                                                                                                                                                        tk.Button(window, text="8", command=lambda: press_num(8)).grid(row=3, column=1, sticky=tk.NSEW)
+                                                                                                                                                                                                                                                        tk.Button(window, text="9", command=lambda: press_num(9)).grid(row=3, column=2, sticky=tk.NSEW)
+                                                                                                                                                                                                                                                        tk.Button(window, text="*", command=lambda: press_op("*")).grid(row=3, column=3, sticky=tk.NSEW)
+
+                                                                                                                                                                                                                                                        # Row 4
+                                                                                                                                                                                                                                                        tk.Button(window, text="4", command=lambda: press_num(4)).grid(row=4, column=0, sticky=tk.NSEW)
+                                                                                                                                                                                                                                                        tk.Button(window, text="5", command=lambda: press_num(5)).grid(row=4, column=1, sticky=tk.NSEW)
+                                                                                                                                                                                                                                                        tk.Button(window, text="6", command=lambda: press_num(6)).grid(row=4, column=2, sticky=tk.NSEW)
+                                                                                                                                                                                                                                                        tk.Button(window, text="-", command=lambda: press_op("-")).grid(row=4, column=3, sticky=tk.NSEW)
+
+                                                                                                                                                                                                                                                        # Row 5
+                                                                                                                                                                                                                                                        tk.Button(window, text="1", command=lambda: press_num(1)).grid(row=5, column=0, sticky=tk.NSEW)
+                                                                                                                                                                                                                                                        tk.Button(window, text="2", command=lambda: press_num(2)).grid(row=5, column=1, sticky=tk.NSEW)
+                                                                                                                                                                                                                                                        tk.Button(window, text="3", command=lambda: press_num(3)).grid(row=5, column=2, sticky=tk.NSEW)
+                                                                                                                                                                                                                                                        tk.Button(window, text="+", command=lambda: press_op("+")).grid(row=5, column=3, sticky=tk.NSEW)
+
+                                                                                                                                                                                                                                                        # Row 6
+                                                                                                                                                                                                                                                        tk.Button(window, text="0", command=lambda: press_num(0)).grid(row=6, column=0, columnspan=2, sticky=tk.NSEW)
+                                                                                                                                                                                                                                                        tk.Button(window, text=".", command=lambda: press_num(".")).grid(row=6, column=2, sticky=tk.NSEW)
+                                                                                                                                                                                                                                                        tk.Button(window, text="=", command=press_eq).grid(row=6, column=3, columnspan=2, sticky=tk.NSEW)
+
+                                                                                                                                                                                                                                                        # Make buttons resize nicely
+                                                                                                                                                                                                                                                        for i in range(7):
+                                                                                                                                                                                                                                                            window.grid_rowconfigure(i, weight=1)
+
+                                                                                                                                                                                                                                                            for j in range(5):
+                                                                                                                                                                                                                                                                window.grid_columnconfigure(j, weight=1)
+
+                                                                                                                                                                                                                                                                window.mainloop()
+                                                                                                                                                                                                                                                        )
+                                                                                                                                                                                                                                                        )
